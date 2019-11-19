@@ -5,8 +5,14 @@ text
 #cdrom
 
 #http://mirrors.sgu.ru/fedora/linux/releases/31/Workstation/x86_64
-url --mirrorlist="https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-30&arch=x86_64"
-repo --name="EPEL" --baseurl=http://dl.fedoraproject.org/pub/epel/7/x86_64
+#url --mirrorlist="https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-30&arch=x86_64"
+#repo --name="EPEL" --baseurl=http://dl.fedoraproject.org/pub/epel/7/x86_64
+url --metalink="https://mirrors.fedoraproject.org/metalink?repo=fedora-$releasever&arch=$basearch"
+repo --name=fedora-updates --mirrorlist="https://mirrors.fedoraproject.org/mirrorlist?repo=updates-released-f30&arch=x86_64" --cost=0
+repo --name=rpmfusion-free --mirrorlist="https://mirrors.rpmfusion.org/mirrorlist?repo=free-fedora-30&arch=x86_64" --includepkgs=rpmfusion-free-release
+repo --name=rpmfusion-free-updates --mirrorlist="https://mirrors.rpmfusion.org/mirrorlist?repo=free-fedora-updates-released-30&arch=x86_64" --cost=0
+repo --name=rpmfusion-nonfree --mirrorlist="https://mirrors.rpmfusion.org/mirrorlist?repo=nonfree-fedora-30&arch=x86_64" --includepkgs=rpmfusion-nonfree-release
+repo --name=rpmfusion-nonfree-updates --mirrorlist="https://mirrors.rpmfusion.org/mirrorlist?repo=nonfree-fedora-updates-released-30&arch=x86_64" --cost=0
 
 # language, keyboard, time settings
 lang en_US.UTF-8
@@ -43,47 +49,58 @@ clearpart --all --drives=sda
 network --onboot=yes --bootproto=dhcp --activate
 # packages that will be installed, anything starting with an @ sign is a yum package group.
 %packages
-@core
-@standard
-@hardware-support
-@base-x
-@fonts
-@development-libs
-@development-tools
-@fedora-packager
+#@core
+#@standard
+#@hardware-support
+#@base-x
+#@fonts
+#@development-libs
+#@development-tools
+#@fedora-packager
 @gnome-desktop
 @gnome-software-development
-gpm
-cmake
-gitk
+#gpm
+#cmake
+#gitk
+#git
+#vim
+#python3.8
+
+@Python Classroom
+@LibreOffice
+#@GNOME Desktop Environment
+
+chromium
+java-latest-openjdk
+firefox
 git
 vim
-python3.8
+ansible
 
 %end
 # Post-installation Script
 %post 
 
 # Install Google Chrome
-cat << EOF > /etc/yum.repos.d/google-chrome.repo
-[google-chrome]
-name=google-chrome
-baseurl=http://dl.google.com/linux/chrome/rpm/stable/x86_64
-enabled=1
-gpgcheck=1
-gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
-EOF
-rpm --import https://dl-ssl.google.com/linux/linux_signing_key.pub
-dnf install -y google-chrome-stable
+#cat << EOF > /etc/yum.repos.d/google-chrome.repo
+#[google-chrome]
+#name=google-chrome
+#baseurl=http://dl.google.com/linux/chrome/rpm/stable/x86_64
+#enabled=1
+#gpgcheck=1
+#gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
+#EOF
+#rpm --import https://dl-ssl.google.com/linux/linux_signing_key.pub
+#dnf install -y google-chrome-stable
 
 # Harden sshd options
-echo "" > /etc/ssh/sshd_config
+#echo "" > /etc/ssh/sshd_config
 # update the system
-yum update -y 
+# yum update -y 
 # add pcadmin to sudoers
-echo "pavel ALL=(ALL)       ALL" >> /etc/sudoers
+#echo "pavel ALL=(ALL)       ALL" >> /etc/sudoers
 # Make sure the system boots X by setting the system to run level 5
-sed -i 's/id:3:initdefault:/id:5:initdefault:/g' /etc/inittab
-# add Kevin Mitnick to group users
-usermod -a -G users pavel 
+#sed -i 's/id:3:initdefault:/id:5:initdefault:/g' /etc/inittab
+# add to group users
+# usermod -a -G users pavel 
 %end
