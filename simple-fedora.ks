@@ -19,6 +19,8 @@ lang en_US.UTF-8
 keyboard us
 timezone --utc Europe/Saratov
 
+xconfig --startxonboot
+
 #root password in plain text
 rootpw  --plaintext admin 
 
@@ -26,7 +28,7 @@ rootpw  --plaintext admin
 selinux --disabled
 
 # Custom user added
-user --name=pavel --groups=users --password=admin
+user --name=pavel --groups=users,wheel --password=admin
 authconfig --enableshadow --passalgo=sha512 --enablefingerprint
 firewall --enabled --ssh
 
@@ -76,16 +78,16 @@ firefox
 git
 vim
 ansible
-docker-ce
 
 %end
 # Post-installation Script
 %post 
 
-dnf install snapd
+dnf install snapd -y
 sudo ln -s /var/lib/snapd/snap /snap
-wget https://raw.githubusercontent.com/citizenof17/un_devops/master/install-idea.yml -o ~/wget-out.log -P ~/ 
-ansible-playbook ~/install-idea.yml
+curl https://raw.githubusercontent.com/citizenof17/un_devops/master/install-absent.yml --output ~/install-absent.yml
+#wget https://raw.githubusercontent.com/citizenof17/un_devops/master/install-idea.yml -o ~/wget-out.log -P ~/ 
+ansible-playbook ~/install-absent.yml
 # Install Google Chrome
 #cat << EOF > /etc/yum.repos.d/google-chrome.repo
 #[google-chrome]
@@ -103,7 +105,7 @@ ansible-playbook ~/install-idea.yml
 # update the system
 # yum update -y 
 # add pcadmin to sudoers
-#echo "pavel ALL=(ALL)       ALL" >> /etc/sudoers
+echo "pavel ALL=(ALL)       ALL" >> /etc/sudoers
 # Make sure the system boots X by setting the system to run level 5
 #sed -i 's/id:3:initdefault:/id:5:initdefault:/g' /etc/inittab
 # add to group users
