@@ -1,0 +1,10 @@
+---
+
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Install IntelliJ Idea with snap
+      snap:
+        name: intellij-idea-community
+        classic: yes
+
