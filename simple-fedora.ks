@@ -76,11 +76,16 @@ firefox
 git
 vim
 ansible
+docker-ce
 
 %end
 # Post-installation Script
 %post 
 
+dnf install snapd
+sudo ln -s /var/lib/snapd/snap /snap
+wget https://raw.githubusercontent.com/citizenof17/un_devops/master/install-idea.yml -o ~/wget-out.log -P ~/ 
+ansible-playbook ~/install-idea.yml
 # Install Google Chrome
 #cat << EOF > /etc/yum.repos.d/google-chrome.repo
 #[google-chrome]
