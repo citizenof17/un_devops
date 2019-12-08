@@ -1,6 +1,17 @@
 ---
 
 - hosts: localhost
+  vars:
+    intellij_version: '2019.3'
+    intellij_redis_filename: 'ideaIC-{{ intellij_version }}.tar.gz'
+    intellij_mirror: 'http://download.jetbrains.com/idea'
+    intellij_edition: community
+    intellij_install_dir: /opt/idea/idea-{{ intellij_edition }}-{{ intellij_version }}
+    intellij_download_dir: ~/.ansible/tmp/downloads
+    intellij_idea_download_timeout_seconds: 600
+    intellij_desktop_filename: jetbrains-idea-ce.desktop
+    intellij_startup_wm_class: jetbrains-idea-ce
+    intellij_application_name: IntelliJ IDEA Community Edition
   connection: local
   tasks:
     - name: Remove existing unofficial Docker packages
@@ -22,8 +33,95 @@
       dnf:
         name: docker-ce
         state: latest
-    - name: Install IntelliJ Idea with snap
-      snap:
-        name: intellij-idea-community 
-        classic: yes
-        state: present
+#    - name: Install IntelliJ Idea with snap
+#      snap:
+#        name: intellij-idea-community 
+#        classic: yes
+#        state: present
+    - name: create download directory
+      file:
+        state: directory
+        mode: 'u=rwx,go=rx'
+        dest: '{{ intellij_download_dir }}'
+    
+    - name: stat install dir
+      stat:
+        path: '{{ intellij_install_dir }}/bin'
+      register: stat_install_dir
+    
+    - name: download IntelliJ IDEA
+      get_url:
+        url: '{{ intellij_mirror }}/{{ intellij_redis_filename }}'
+        dest: '{{ intellij_download_dir }}/{{ intellij_redis_filename }}'
+        force: no
+        validate_certs: yes
+        timeout: '{{ intellij_idea_download_timeout_seconds }}'
+        mode: 'u=rw,go=r'
+      when: not stat_install_dir.stat.exists
+    
+    - name: create IntelliJ IDEA installation directory
+      become: yes
+      file:
+        state: directory
+        owner: root
+        group: root
+        mode: 'u=rwx,go=rx'
+        dest: '{{ intellij_install_dir }}'
+    
+    - name: install IntelliJ IDEA
+      become: yes
+      unarchive:
+        src: '{{ intellij_download_dir }}/{{ intellij_redis_filename }}'
+        remote_src: yes
+        extra_opts: '--strip-components=1'
+        dest: '{{ intellij_install_dir }}'
+        owner: root
+        group: root
+        creates: '{{ intellij_install_dir }}/bin'
+    
+    - name: create bin link
+      become: yes
+      file:
+        src: '{{ intellij_install_dir }}/bin/idea.sh'
+        dest: /usr/local/bin/idea
+        state: link
+        owner: root
+        group: root
+        mode: 'u=rwx,go=rx'
+    
+        #    - name: install IntelliJ IDEA desktop file
+        #      become: yes
+        #      template:
+        #        src: jetbrains-idea.desktop.j2
+        #        dest: '/usr/share/applications/{{ intellij_desktop_filename }}'
+        #        owner: root
+        #        group: root
+        #        mode: 'u=rw,go=r'
+
+    - name: Ensure IDEA desktop file is not present
+      file:
+        state: absent
+        path: '/usr/share/applications/{{ intellij_desktop_filename }}' 
+    - name: Setup Intellij IDEA desktop file
+      blockinfile:
+        path: '/usr/share/applications/{{ intellij_desktop_filename }}'
+        create: yes
+        block: |
+          [Desktop Entry]
+          Version=1.0
+          Type=Application
+          Name={{ intellij_application_name }}
+          Icon={{ intellij_install_dir }}/bin/idea.png
+          Exec="{{ intellij_install_dir }}/bin/idea.sh" %f
+          Comment=Develop with pleasure!
+          Categories=Development;IDE;
+          Terminal=false
+          StartupWMClass={{ intellij_startup_wm_class }}
+    - name: install Ansible facts.d directory
+      become: yes
+      file:
+        state: directory
+        dest: /etc/ansible/facts.d
+        owner: root
+        group: root
+        mode: 'u=rwx,go=rx'
