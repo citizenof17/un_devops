@@ -88,17 +88,17 @@ sudo ln -s /var/lib/snapd/snap /snap
 curl https://raw.githubusercontent.com/citizenof17/un_devops/master/install-absent.yml --output ~/install-absent.yml
 #wget https://raw.githubusercontent.com/citizenof17/un_devops/master/install-idea.yml -o ~/wget-out.log -P ~/ 
 ansible-playbook ~/install-absent.yml
-# Install Google Chrome
-#cat << EOF > /etc/yum.repos.d/google-chrome.repo
-#[google-chrome]
-#name=google-chrome
-#baseurl=http://dl.google.com/linux/chrome/rpm/stable/x86_64
-#enabled=1
-#gpgcheck=1
-#gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
-#EOF
-#rpm --import https://dl-ssl.google.com/linux/linux_signing_key.pub
-#dnf install -y google-chrome-stable
+sudo groupadd docker
+sudo usermod -aG docker pavel
+
+# Enable docker daemon to start on boot
+sudo systemctl enable docker
+
+# Load jenkins image and run it
+mkdir /home/pavel/jenkins_home
+docker run -d --restart=always -p 8080:8080 -p 50000:50000 -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false -v /home/pavel/jenkins_home:/var/jenkins_home jenkins
+
+docker run -d --restart=always -p 8081:8080 -p 29418:29418 -e GERRIT_INIT_ARGS='--install-plugin=download-commands' gerritcodereview/gerrit
 
 # Harden sshd options
 #echo "" > /etc/ssh/sshd_config
