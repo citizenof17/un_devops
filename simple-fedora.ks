@@ -88,12 +88,12 @@ sudo ln -s /var/lib/snapd/snap /snap
 curl https://raw.githubusercontent.com/citizenof17/un_devops/master/install-absent.yml --output ~/install-absent.yml
 #wget https://raw.githubusercontent.com/citizenof17/un_devops/master/install-idea.yml -o ~/wget-out.log -P ~/ 
 ansible-playbook ~/install-absent.yml
-sudo groupadd docker
+#sudo groupadd docker
 sudo usermod -aG docker pavel
 
 # Enable docker daemon to start on boot
 sudo systemctl enable docker
-
+#sudo service docker start
 # Load jenkins image and run it
 mkdir /home/pavel/jenkins_home
 docker run -d --restart=always -p 8080:8080 -p 50000:50000 -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false -v /home/pavel/jenkins_home:/var/jenkins_home jenkins

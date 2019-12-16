@@ -33,6 +33,17 @@
       dnf:
         name: docker-ce
         state: latest
+    - name: Ensure docker deamon is running
+      service:
+        name: docker
+        state: started
+      become: true
+      #- name: Ensure My docker container is running
+      #  docker_container:
+      #    name: testing
+      #    image: busybox
+      #    state: started
+      #  become: true
 #    - name: Install IntelliJ Idea with snap
 #      snap:
 #        name: intellij-idea-community 
