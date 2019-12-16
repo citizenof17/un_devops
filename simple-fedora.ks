@@ -92,7 +92,8 @@ ansible-playbook ~/install-absent.yml
 sudo usermod -aG docker pavel
 
 # Enable docker daemon to start on boot
-sudo systemctl enable docker
+systemctl enable docker
+service docker start
 #sudo service docker start
 # Load jenkins image and run it
 mkdir /home/pavel/jenkins_home
