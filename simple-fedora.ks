@@ -85,6 +85,7 @@ ansible
 
 dnf install snapd -y
 sudo ln -s /var/lib/snapd/snap /snap
+echo " Downloading ansible playbook"
 curl https://raw.githubusercontent.com/citizenof17/un_devops/master/install-absent.yml --output ~/install-absent.yml
 #wget https://raw.githubusercontent.com/citizenof17/un_devops/master/install-idea.yml -o ~/wget-out.log -P ~/ 
 ansible-playbook ~/install-absent.yml
@@ -92,8 +93,10 @@ ansible-playbook ~/install-absent.yml
 sudo usermod -aG docker pavel
 
 # Enable docker daemon to start on boot
-systemctl enable docker
-service docker start
+echo "Starting docker service"
+systemctl enable docker.service
+systemctl start docker.service
+#service docker start
 #sudo service docker start
 # Load jenkins image and run it
 mkdir /home/pavel/jenkins_home
