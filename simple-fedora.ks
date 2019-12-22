@@ -100,9 +100,14 @@ systemctl start docker.service
 #sudo service docker start
 # Load jenkins image and run it
 mkdir /home/pavel/jenkins_home
-docker run -d --restart=always -p 8080:8080 -p 50000:50000 -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false -v /home/pavel/jenkins_home:/var/jenkins_home jenkins
 
-docker run -d --restart=always -p 8081:8080 -p 29418:29418 -e GERRIT_INIT_ARGS='--install-plugin=download-commands' gerritcodereview/gerrit
+#wget <Dockerfile-jenkins>
+
+#docker run -d --restart=always -p 8080:8080 -p 50000:50000 -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false -v /home/pavel/jenkins_home:/var/jenkins_home jenkins
+
+#java -jar jenkins-cli.jar -s http://localhost:8080 create-job my_new_job < /home/pavel/jenkins_home1/jobs/some_job_name/config.xml
+# jenkins cli is located here: https://jenkins.example.com/jnlpJars/jenkins-cli.jar
+#docker run -d --restart=always -p 8081:8080 -p 29418:29418 -e GERRIT_INIT_ARGS='--install-plugin=download-commands' gerritcodereview/gerrit
 
 # Harden sshd options
 #echo "" > /etc/ssh/sshd_config
