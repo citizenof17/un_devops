@@ -78,30 +78,26 @@ firefox
 git
 vim
 ansible
+wget
 
 %end
 # Post-installation Script
 %post 
 
-dnf install snapd -y
-sudo ln -s /var/lib/snapd/snap /snap
-echo " Downloading ansible playbook"
+#dnf install snapd -y
+#sudo ln -s /var/lib/snapd/snap /snap
+echo "Downloading ansible playbook"
 curl https://raw.githubusercontent.com/citizenof17/un_devops/master/install-absent.yml --output ~/install-absent.yml
 #wget https://raw.githubusercontent.com/citizenof17/un_devops/master/install-idea.yml -o ~/wget-out.log -P ~/ 
 ansible-playbook ~/install-absent.yml
 #sudo groupadd docker
 sudo usermod -aG docker pavel
 
-# Enable docker daemon to start on boot
-echo "Starting docker service"
-systemctl enable docker.service
-systemctl start docker.service
-#service docker start
-#sudo service docker start
-# Load jenkins image and run it
-mkdir /home/pavel/jenkins_home
-
-#wget <Dockerfile-jenkins>
+echo "Create initial service to setup docker on first boot"
+curl https://raw.githubusercontent.com/citizenof17/un_devops/master/my_docker_init.service --output /etc/systemd/system/my_docker_init.service
+curl https://raw.githubusercontent.com/citizenof17/un_devops/master/initial_setup.sh --output /usr/local/bin/initial_setup.sh
+chmod a+x /usr/local/bin/initial_setup.sh
+systemctl enable my_docker_init.service
 
 #docker run -d --restart=always -p 8080:8080 -p 50000:50000 -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false -v /home/pavel/jenkins_home:/var/jenkins_home jenkins
 
@@ -109,14 +105,5 @@ mkdir /home/pavel/jenkins_home
 # jenkins cli is located here: https://jenkins.example.com/jnlpJars/jenkins-cli.jar
 #docker run -d --restart=always -p 8081:8080 -p 29418:29418 -e GERRIT_INIT_ARGS='--install-plugin=download-commands' gerritcodereview/gerrit
 
-# Harden sshd options
-#echo "" > /etc/ssh/sshd_config
-# update the system
-# yum update -y 
-# add pcadmin to sudoers
 echo "pavel ALL=(ALL)       ALL" >> /etc/sudoers
-# Make sure the system boots X by setting the system to run level 5
-#sed -i 's/id:3:initdefault:/id:5:initdefault:/g' /etc/inittab
-# add to group users
-# usermod -a -G users pavel 
 %end
