@@ -43,7 +43,7 @@ echo "Create /home/pavel/jenkins_home"
 mkdir "$JENKINS_HOME"
 chmod a+w "$JENKINS_HOME"
 #fi
-docker create --name jenkins --restart=always --net=host -p 8081:8081 -p 50000:50000 -v "$JENKINS_HOME":/var/jenkins_home my_jenkins
+docker create --name jenkins --restart=always --net=host -v "$JENKINS_HOME":/var/jenkins_home my_jenkins
 docker start jenkins --httpPort=8081
 
 echo "Sleep and wait for jenkins (better poll its api, but nvm)"
@@ -52,10 +52,18 @@ sleep 45
 echo "Load jenkins-cli"
 wget http://localhost:8080/jnlpJars/jenkins-cli.jar
 
-echo "Create job"
+echo "Create jenkins job"
 java -jar jenkins-cli.jar -s http://localhost:8080 create-job my_new_job < $TEMP_DIR/config.xml
 
 echo "Jenkins intallation is finished!"
+
+echo "Install gerrit"
+
+docker create --net=host --name gerrit --restart=always gerritcodereview/gerrit
+docker start gerrit --skip-plugins
+
+echo "Gerrit is installed"
+
 echo "Setting docker initialized file not to run this script in future"
 touch "$FILE"
 echo "1" > "$FILE"

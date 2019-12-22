@@ -63,3 +63,4 @@ matrix-auth
 pam-auth
 ldap
 email-ext
+gerrit-trigger
