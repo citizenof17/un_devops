@@ -1,5 +1,7 @@
 #! /bin/sh
 
+set -ex
+
 FILE=/home/pavel/docker_initialized
 TEMP_DIR=/tmp/init_docker
 JENKINS_HOME=/home/pavel/jenkins_home
@@ -25,18 +27,19 @@ wget https://raw.githubusercontent.com/citizenof17/un_devops/master/plugins.txt
 wget https://raw.githubusercontent.com/citizenof17/un_devops/master/config.xml
 
 echo "Clean docker leftovers"
-docker container rm -f jenkins
-docker rmi my_jenkins
+docker container rm -f jenkins || true
+docker rmi my_jenkins || true
 
 echo "Build docker image for jenkins"
 docker build -f Dockerfile-jenkins -t my_jenkins .
 
 echo "Create and start jenkins container"
-if [ ! -d "$JENKINS_HOME" ]; then
-    echo "Create /home/pavel/jenkins_home"
-    mkdir "$JENKINS_HOME"
-    chmod a+w "$JENKINS_HOME"
-fi
+rm -rf "$JENKINS_HOME"
+#if [ ! -d "$JENKINS_HOME" ]; then
+echo "Create /home/pavel/jenkins_home"
+mkdir "$JENKINS_HOME"
+chmod a+w "$JENKINS_HOME"
+#fi
 docker create --name jenkins --restart=always -p 8080:8080 -p 50000:50000 -v "$JENKINS_HOME":/var/jenkins_home my_jenkins
 docker start jenkins
 
