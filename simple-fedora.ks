@@ -97,6 +97,7 @@ echo "Create initial service to setup docker on first boot"
 curl https://raw.githubusercontent.com/citizenof17/un_devops/master/my_docker_init.service --output /etc/systemd/system/my_docker_init.service
 curl https://raw.githubusercontent.com/citizenof17/un_devops/master/initial_setup.sh --output /usr/local/bin/initial_setup.sh
 chmod a+x /usr/local/bin/initial_setup.sh
+chmod a+x /etc/systemd/system/my_docker_init.service
 systemctl enable my_docker_init.service
 
 #docker run -d --restart=always -p 8080:8080 -p 50000:50000 -e JAVA_OPTS=-Djenkins.install.runSetupWizard=false -v /home/pavel/jenkins_home:/var/jenkins_home jenkins

@@ -11,6 +11,9 @@ if [ -e "$FILE" ]; then
     exit 0
 fi
 
+systemctl enable docker.service
+systemctl start docker.service
+
 echo "Go to temp folder"
 # Better do check for its presence and exit
 
@@ -40,8 +43,8 @@ echo "Create /home/pavel/jenkins_home"
 mkdir "$JENKINS_HOME"
 chmod a+w "$JENKINS_HOME"
 #fi
-docker create --name jenkins --restart=always -p 8080:8080 -p 50000:50000 -v "$JENKINS_HOME":/var/jenkins_home my_jenkins
-docker start jenkins
+docker create --name jenkins --restart=always --net=host -p 8081:8081 -p 50000:50000 -v "$JENKINS_HOME":/var/jenkins_home my_jenkins
+docker start jenkins --httpPort=8081
 
 echo "Sleep and wait for jenkins (better poll its api, but nvm)"
 sleep 45
